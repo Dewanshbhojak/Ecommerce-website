@@ -2,6 +2,7 @@ import React from 'react'
 import Login from './component/Login'
 import Register from './component/Register'
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import Home from './component/Home'
 
 const App = () => {
   return (
@@ -10,6 +11,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Login/>}/>
        <Route path="/register" element={<Register/>}/>
+       <Route path="/home" element={<Home/>}/>
     </Routes>
    
   )
