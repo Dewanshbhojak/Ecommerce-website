@@ -1,10 +1,11 @@
 import React from "react";
 import Navbar from "./Navbar";
-
+import FooterComponent from "./FooterComponent";
 const Home = () => {
   return (
     <div>
       <Navbar />
+      <FooterComponent/>
 
       <div className="bg-amber-600 w-full h-[400px] overflow-hidden"></div>
       <div className="bg-amber-700 w-full p-10">
@@ -37,7 +38,8 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div>  
+    
     </div>
   );
 };
