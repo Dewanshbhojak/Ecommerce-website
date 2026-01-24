@@ -24,8 +24,13 @@ const Navbar = () => {
 
     
     <div className="flex-1 flex justify-end items-center space-x-5">
-     <Link to={"/"}> <FaSearch size={20} /> </Link>
-      <FaUser size={21} />
+       <div> 
+      <input type='search' name="" id=""  className='bg-stone-300 text-gray-700 rounded-2xl h-7 p-3  hover:border-2' placeholder='Search'/>
+    </div>
+    <FaSearch size={20} />
+     <Link to={"/"}> <FaUser size={21} /> </Link>
+     
+      
       <FaShoppingBag size={21} />
     </div>
 

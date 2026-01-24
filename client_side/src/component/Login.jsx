@@ -56,7 +56,7 @@ const Login = () => {
         </div>
 
        
-        <button className="h-10 w-full rounded-xl bg-black text-lg text-white transition hover:bg-gray-900">
+        <button type='submit' className="h-10 w-full rounded-xl bg-black text-lg text-white transition hover:bg-gray-900">
           Sign In
         </button>
 
