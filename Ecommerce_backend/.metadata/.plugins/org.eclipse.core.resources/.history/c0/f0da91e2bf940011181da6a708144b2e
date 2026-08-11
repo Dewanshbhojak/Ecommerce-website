@@ -1,0 +1,58 @@
+spring.application.name=Ecommerce_Backend
+
+# =========================================================
+# CORS
+# =========================================================
+
+# Local development frontend
+cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+
+# =========================================================
+# MySQL DATABASE
+# =========================================================
+
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/ecommerce?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:root}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# Optional but useful
+spring.jpa.show-sql=false
+spring.jpa.open-in-view=false
+
+
+# =========================================================
+# SPRING SECURITY
+# =========================================================
+
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+
+# =========================================================
+# RAZORPAY
+# =========================================================
+
+razorpay.key_id=${RAZORPAY_KEY_ID}
+razorpay.key_secret=${RAZORPAY_KEY_SECRET}
+
+
+# =========================================================
+# EMAIL / GMAIL SMTP
+# =========================================================
+
+spring.mail.host=${SPRING_MAIL_HOST:smtp.gmail.com}
+spring.mail.port=${SPRING_MAIL_PORT:587}
+
+spring.mail.username=${SPRING_MAIL_USERNAME}
+spring.mail.password=${SPRING_MAIL_PASSWORD}
+
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+# Optional mail timeout configuration
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=5000
+spring.mail.properties.mail.smtp.writetimeout=5000
