@@ -1,86 +1,127 @@
-import React from 'react'
-
-import { FaGithub } from 'react-icons/fa'
-import { FcGoogle } from 'react-icons/fc'
-import { Link } from 'react-router-dom'
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { User, Mail, ArrowRight } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { registerUser } from "../Services/authService";
 
 const Register = () => {
+  const [username, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { loginUser } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e?.preventDefault();
+
+    if (!username.trim() || !email.trim() || !email.includes("@")) {
+      showError("Please provide your full name and a valid email address.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await registerUser({ username, email, password: "USER_REGISTER_DEFAULT" });
+      if (response && (response.status === 200 || response.data)) {
+        const userData = response.data || { name: username, email };
+        loginUser(userData);
+        showSuccess("Account created successfully! Welcome to Vibe Luxe.");
+        navigate("/home");
+        return;
+      }
+    } catch (err) {
+      console.log("Registration error", err);
+      showError(err.response?.data?.message || "Unable to register account. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-   <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md rounded-xl border bg-white p-6 shadow-sm transition hover:shadow-2xl sm:p-8">
-        
-        <h1 className="mt-2 text-center text-2xl font-serif text-black sm:text-3xl">
-          Create an account
-        </h1>
+    <div className="min-h-screen bg-[#FAF8F5] flex flex-col justify-center items-center px-4 py-12">
+      {/* Brand Header */}
+      <div className="text-center mb-8">
+        <Link to="/home" className="inline-block">
+          <h1 className="text-3xl font-serif font-bold tracking-wider text-stone-900">
+            VIBE<span className="text-[#5A6B5C] font-sans text-sm font-semibold tracking-normal uppercase ml-1">LUXE</span>
+          </h1>
+        </Link>
+        <p className="text-xs text-stone-500 uppercase tracking-widest mt-1">Bespoke Concierge Onboarding</p>
+      </div>
 
-        <p className="mt-2 text-center text-sm text-gray-600 sm:text-base">
-          Enter your information to get started
-        </p>
- <div className="mt-4">
-          <label className="block font-semibold">Full Name</label>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            className="mt-2 h-10 w-full rounded bg-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-         <div className="mt-4">
-          <label className="block font-semibold">Email</label>
-          <input
-            type="email"
-            placeholder="name@example.com"
-            className="mt-2 h-10 w-full rounded bg-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-         <div className="mt-4">
-          <label className="block font-semibold">Password</label>
-          <input
-            type="email"
-            placeholder="Create a password"
-            className="mt-2 h-10 w-full rounded bg-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-         <div className="mt-4">
-          <label className="block font-semibold">Confirm password</label>
-          <input
-            type="email"
-            placeholder="Confirm you password"
-            className="mt-2 h-10 w-full rounded bg-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-        <div className="my-6 flex items-center">
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="mx-4 text-sm text-gray-500">Or continue with</span>
-          <div className="flex-grow border-t border-gray-300"></div>
+      {/* Form Container */}
+      <div className="w-full max-w-md bg-white rounded-3xl border border-stone-200/80 p-8 shadow-xl shadow-stone-200/50">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-serif font-medium text-stone-900">Create An Account</h2>
+          <p className="text-stone-500 text-sm mt-1 font-light">
+            Join Vibe Luxe for instant access to curated collections
+          </p>
         </div>
 
-       
-        <button className="h-10 w-full rounded-xl bg-black text- text-white transition hover:bg-gray-900">
-          Create account
-        </button>
+        <form onSubmit={handleRegister} className="space-y-5">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 mb-2">
+              Full Name
+            </label>
+            <div className="relative">
+              <User className="w-5 h-5 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                required
+                placeholder="Enter your full name"
+                value={username}
+                onChange={(e) => setUserName(e.target.value)}
+                className="w-full h-12 bg-stone-50 border border-stone-200 rounded-xl pl-11 pr-4 text-sm text-stone-900 focus:outline-none focus:border-[#5A6B5C] focus:bg-white transition-colors"
+              />
+            </div>
+          </div>
 
-       
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <button className="flex w-full items-center justify-center gap-3 rounded-xl border py-2 hover:bg-gray-300">
-            <FcGoogle size={20} />
-            Google
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 mb-2">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="w-5 h-5 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="email"
+                required
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-12 bg-stone-50 border border-stone-200 rounded-xl pl-11 pr-4 text-sm text-stone-900 focus:outline-none focus:border-[#5A6B5C] focus:bg-white transition-colors"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full h-12 rounded-xl bg-[#5A6B5C] hover:bg-[#4A584C] text-white font-semibold text-sm uppercase tracking-wider transition-colors shadow-sm inline-flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+          >
+            {loading ? (
+              "Creating Account..."
+            ) : (
+              <>
+                <span>Get Started</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
+        </form>
 
-          <button className="flex w-full items-center justify-center gap-3 rounded-xl border py-2 hover:bg-gray-300">
-            <FaGithub size={20} />
-            GitHub
-          </button>
+        <div className="mt-8 pt-6 border-t border-stone-100 text-center text-xs text-stone-500">
+          Already a member?{" "}
+          <Link to="/login" className="font-semibold text-[#5A6B5C] hover:underline">
+            Sign In with OTP
+          </Link>
         </div>
-
-        {/* Sign Up */}
-        <div className="mt-6 text-center text-sm text-gray-500">
-          Don’t have an account?
-          <Link to="/" className="ml-2 text-blue-600 hover:underline"> Sign In </Link>
-        </div>
-
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

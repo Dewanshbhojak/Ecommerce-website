@@ -1,24 +1,41 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# =========================
+# Frontend
+# =========================
+client_side/node_modules/
+client_side/dist/
+client_side/.env
+client_side/.env.local
+client_side/.env.development
+client_side/.env.production
+client_side/.env.*.local
 
-node_modules
-dist
-dist-ssr
-*.local
+# =========================
+# Spring Boot
+# =========================
+Ecommerce_backend/target/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Eclipse / STS
+Ecommerce_backend/.metadata/
+Ecommerce_backend/.classpath
+Ecommerce_backend/.project
+Ecommerce_backend/.settings/
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Environment
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# OS / Logs
+# =========================
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+*.log
