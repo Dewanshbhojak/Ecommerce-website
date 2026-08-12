@@ -27,8 +27,8 @@ import com.example.demo.Repository.OrderitemsRepository;
 import com.example.demo.Repository.OrdersRepository;
 import com.example.demo.Repository.UserRepository;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseCookie;
 @Service
 public class UserService {
 		 
@@ -39,6 +39,8 @@ public class UserService {
 	private OrdersRepository ordersRepository;
 	private JavaMailSender javaMailSender;
 	private ChangePasswordRepository changePasswordRepository;
+	@org.springframework.beans.factory.annotation.Value("${app.cookie.secure:false}")
+	private boolean cookieSecure;
 	public UserService(UserRepository userRepository, JwtRepositary jwtRepository, JwtService jwtservice,
 			OrderitemsRepository orderItemsRepository,JavaMailSender javaMailSender, OrdersRepository ordersRepository ,ChangePasswordRepository changePasswordRepository) {
 		super();
@@ -68,28 +70,23 @@ public class UserService {
 			return ResponseEntity.badRequest().body(Map.of("message","credential not found"));
 		}
 		String token = jwtservice.generateToken(user);
-		Cookie cookie = new Cookie("jwt",token);
-		cookie.setHttpOnly(true);
-		cookie.setPath("/");
-		cookie.setMaxAge(3600);
-		response.addCookie(cookie);
+		response.addHeader("Set-Cookie", ResponseCookie.from("jwt", token)
+				.httpOnly(true).secure(cookieSecure).sameSite(cookieSecure ? "None" : "Lax")
+				.path("/").maxAge(3600).build().toString());
 		
 		return ResponseEntity.ok(Map.of("message","Login successfull" , "Jwt", token));
 	} 
 	
 	public ResponseEntity<?> logout(int userId,HttpServletResponse response) {
 		User user = userRepository.findById(userId);
-		System.out.println("services is working");
 		if(user==null) {
 			return ResponseEntity.badRequest().body( Map.of("message","User not found"));
 		}
 		
 		
-		Cookie cookie = new Cookie("jwt","");
-		cookie.setHttpOnly(true);
-		cookie.setPath("/");
-		cookie.setMaxAge(0);
-		response.addCookie(cookie);
+		response.addHeader("Set-Cookie", ResponseCookie.from("jwt", "")
+				.httpOnly(true).secure(cookieSecure).sameSite(cookieSecure ? "None" : "Lax")
+				.path("/").maxAge(0).build().toString());
 		
 		return ResponseEntity.ok(Map.of("message","LogOut successfull" ));
 	}
@@ -117,7 +114,6 @@ public class UserService {
 		
 		User user =  userRepository.findByEmail(email);
 		
-		System.out.println(user + " " + email);
 		if(user == null) {
 			throw new RuntimeException("Invalid Email");
 		}

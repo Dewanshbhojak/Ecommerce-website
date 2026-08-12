@@ -10,6 +10,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	
 	List<Product> findByCategoryCategoryName(String categoryName);
 	List<Product> findByCategoryCategoryNameIgnoreCase(String categoryName);
+	boolean existsByNameIgnoreCase(String name);
 	List<Product> findByProductId(int productId);
 	Product findById(int productId);
 	List<Product> findTop8ByOrderByCreatedAtDesc();

@@ -22,5 +22,5 @@ public interface CartRepository extends JpaRepository<Cart, Integer>{
 	@Modifying
 	@Transactional
 	void deleteByUserAndProduct(User user, Product product);
-	void deleteAllCartItemsByUser(User user);
+	void deleteByUser(User user);
 }

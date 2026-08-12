@@ -20,6 +20,9 @@ public class CorsConfig {
                 String[] origins = allowedOrigins.split(",");
                 for (int i = 0; i < origins.length; i++) {
                     origins[i] = origins[i].trim();
+                    if (origins[i].endsWith("/")) {
+                        origins[i] = origins[i].substring(0, origins[i].length() - 1);
+                    }
                 }
                 registry.addMapping("/**")
                         .allowedOrigins(origins)

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.Service.ProductService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class ProductController {
 
 	private final ProductService productService;

@@ -22,7 +22,6 @@ import com.example.demo.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 @RestController
-@CrossOrigin(origins = "http://localhost:5173",allowCredentials = "true")
 public class UserController {
 
 	UserService userService ;

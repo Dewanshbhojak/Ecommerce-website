@@ -40,7 +40,6 @@ INDEX VERSION 1.134+C:\Users\HP\OneDrive\Desktop\new project - Vibe-Code\Ecommer
 2711064581.index
 4059124334.index
 945779250.index
-2532808137.index
 1340605057.index
 1764543286.index
 3525927932.index

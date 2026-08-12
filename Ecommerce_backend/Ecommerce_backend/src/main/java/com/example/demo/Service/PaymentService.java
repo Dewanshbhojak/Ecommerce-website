@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -57,10 +55,9 @@ public class PaymentService {
 			BigDecimal item_amount = product.getPrice().multiply(BigDecimal.valueOf(cart.getQuantity()));
 			total_amount=total_amount.add(item_amount);
 		}
-		System.out.println("User = " + user);
-		System.out.println("Cart Size = " + listCart.size());
-		System.out.println("Total Amount = " + total_amount);
-		System.out.println("Key Id = " + razorpayKeyId);
+		if (razorpayKeyId == null || razorpayKeyId.isBlank() || razorpayKeySecret == null || razorpayKeySecret.isBlank()) {
+			throw new IllegalStateException("Payment service is not configured");
+		}
 		RazorpayClient razorPayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
 		JSONObject orderRequest  = new JSONObject();
 		orderRequest.put("amount",total_amount.multiply(BigDecimal.valueOf(100)).intValue());
@@ -108,6 +105,12 @@ public class PaymentService {
 	                ordersRepository.findById(razorpayOrderId)
 	                        .orElseThrow(() ->
 	                                new RuntimeException("Order not found"));
+	        if (order.getUser().getUser_id() != user.getUser_id()) {
+	            return false;
+	        }
+	        if (order.getStatus() == Status.SUCCESS) {
+	            return true;
+	        }
 
 	        order.setStatus(Status.SUCCESS);
 	        order.setUpdatedAt(LocalDateTime.now());
@@ -140,13 +143,11 @@ public class PaymentService {
 	            orderitemsRepository.save(orderItem);
 	        }
 
-	        cartRepository.deleteAllCartItemsByUser(user);
+	        cartRepository.deleteByUser(user);
 
 	        return true;
 
 	    } catch (Exception e) {
-
-	        e.printStackTrace();
 	        return false;
 	    }
 	}

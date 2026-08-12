@@ -8,7 +8,9 @@ import com.example.demo.Repository.ProductImageRepository;
 import com.example.demo.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@ConditionalOnProperty(name = "app.seed-data", havingValue = "true")
 public class DataInitializer implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
@@ -30,7 +33,8 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    @Transactional
+    public void run(String... args) {
         seedCategoriesAndProducts();
     }
 
@@ -69,8 +73,7 @@ public class DataInitializer implements CommandLineRunner {
             categoryMap.put(name, category);
         }
 
-        if (productRepository.count() == 0) {
-            Object[][] seedProducts = {
+        Object[][] seedProducts = {
                 // Name, Description, Price, Stock, CategoryName, MainImageUrl
                 {"Classic Italian Leather Sneakers", "Handcrafted in Florence using full-grain calfskin leather with lightweight rubber cupsole.", 185.00, 25, "Shoes", "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=800"},
                 {"Suede Chelsea Boots", "Classic ankle silhouette with stretch side goring and stacked leather heel.", 260.00, 18, "Shoes", "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&q=80&w=800"},
@@ -95,7 +98,7 @@ public class DataInitializer implements CommandLineRunner {
                 String imgUrl = (String) pData[5];
 
                 Category cat = categoryMap.get(catName);
-                if (cat != null) {
+                if (cat != null && !productRepository.existsByNameIgnoreCase(pName)) {
                     Product p = new Product(pName, pDesc, pPrice, pStock, cat, LocalDateTime.now(), LocalDateTime.now());
                     Product savedProduct = productRepository.save(p);
 
@@ -104,10 +107,6 @@ public class DataInitializer implements CommandLineRunner {
                     pImg.setImageurl(imgUrl);
                     productImageRepository.save(pImg);
                 }
-            }
-            System.out.println("=================================================");
-            System.out.println("SUCCESSFULLY SEEDED 8 CATEGORIES & SAMPLE PRODUCTS");
-            System.out.println("=================================================");
         }
     }
 }

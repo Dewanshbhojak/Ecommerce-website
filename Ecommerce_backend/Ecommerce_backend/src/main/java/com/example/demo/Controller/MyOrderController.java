@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/order")
-@CrossOrigin(origins = "http://localhost:5173/",allowCredentials = "true")
 public class MyOrderController {
 
 	MyOrderService myOrderService ;

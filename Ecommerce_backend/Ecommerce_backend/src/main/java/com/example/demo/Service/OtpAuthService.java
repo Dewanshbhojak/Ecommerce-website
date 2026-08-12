@@ -5,10 +5,10 @@ import com.example.demo.Entity.User;
 import com.example.demo.Enums.Role;
 import com.example.demo.Repository.OtpTokenRepository;
 import com.example.demo.Repository.UserRepository;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseCookie;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.security.SecureRandom;
 
 @Service
 public class OtpAuthService {
@@ -25,6 +26,9 @@ public class OtpAuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final JavaMailSender javaMailSender;
+
+    @org.springframework.beans.factory.annotation.Value("${app.cookie.secure:false}")
+    private boolean cookieSecure;
 
     @Autowired
     public OtpAuthService(OtpTokenRepository otpTokenRepository, UserRepository userRepository,
@@ -51,28 +55,23 @@ public class OtpAuthService {
             }
         }
 
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         int code = 100000 + random.nextInt(900000);
         String otpCode = String.valueOf(code);
 
-        OtpToken otpToken = new OtpToken(cleanEmail, otpCode, LocalDateTime.now().plusMinutes(5));
-        otpTokenRepository.save(otpToken);
-
-        System.out.println("=================================================");
-        System.out.println("DISPATCHED OTP FOR " + cleanEmail + ": " + otpCode);
-        System.out.println("=================================================");
-
-        if (javaMailSender != null) {
-            try {
-                SimpleMailMessage message = new SimpleMailMessage();
-                message.setTo(cleanEmail);
-                message.setSubject("Vibe Luxe - Your Security Verification Passcode");
-                message.setText("Hello,\n\nYour One-Time Passcode (OTP) for Vibe Luxe login is: " + otpCode + "\n\nThis code expires in 5 minutes.\n\nThank you,\nVibe Luxe Concierge Team");
-                javaMailSender.send(message);
-            } catch (Exception e) {
-                System.err.println("Mail send exception: " + e.getMessage());
-            }
+        if (javaMailSender == null) {
+            return ResponseEntity.status(503).body(Map.of("message", "Email service is not configured"));
         }
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(cleanEmail);
+            message.setSubject("Vibe Luxe - Your Security Verification Passcode");
+            message.setText("Hello,\n\nYour One-Time Passcode (OTP) for Vibe Luxe login is: " + otpCode + "\n\nThis code expires in 5 minutes.\n\nThank you,\nVibe Luxe Concierge Team");
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(502).body(Map.of("message", "Unable to send OTP email"));
+        }
+        otpTokenRepository.save(new OtpToken(cleanEmail, otpCode, LocalDateTime.now().plusMinutes(5)));
 
         return ResponseEntity.ok(Map.of(
             "message", "OTP sent successfully to " + cleanEmail,
@@ -116,17 +115,15 @@ public class OtpAuthService {
             user = new User();
             user.setUsername(username);
             user.setEmail(cleanEmail);
-            user.setPassword("OTP_AUTH_USER");
+            user.setPassword(java.util.UUID.randomUUID().toString());
             user.setRole(Role.Customer);
             user = userRepository.save(user);
         }
 
         String jwtToken = jwtService.generateToken(user);
-        Cookie cookie = new Cookie("jwt", jwtToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(86400); // 24 hours
-        response.addCookie(cookie);
+        response.addHeader("Set-Cookie", ResponseCookie.from("jwt", jwtToken)
+                .httpOnly(true).secure(cookieSecure).sameSite(cookieSecure ? "None" : "Lax")
+                .path("/").maxAge(86400).build().toString());
 
         return ResponseEntity.ok(Map.of(
             "message", "Login successfull",
