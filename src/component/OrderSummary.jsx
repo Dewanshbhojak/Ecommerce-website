@@ -13,7 +13,7 @@ const navigate = useNavigate();
       console.log(orderid);
 
       const options = {
-        key: "rzp_test_T6aWVQ3c0fO67L",
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_T6aWVQ3c0fO67L",
 
         amount: total * 100,
 

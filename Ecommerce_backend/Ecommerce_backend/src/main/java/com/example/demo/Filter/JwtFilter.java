@@ -68,7 +68,8 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         // 4. Determine if path is public (unauthenticated allowed)
-        boolean isPublicPath = path.startsWith("/api/products")
+        boolean isPublicPath = path.equals("/api/health")
+                || path.startsWith("/api/products")
                 || path.startsWith("/api/product")
                 || path.startsWith("/api/categories")
                 || path.startsWith("/api/auth")

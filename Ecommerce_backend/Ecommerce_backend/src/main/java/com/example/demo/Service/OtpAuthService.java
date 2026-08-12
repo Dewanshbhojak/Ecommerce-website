@@ -125,7 +125,6 @@ public class OtpAuthService {
         Cookie cookie = new Cookie("jwt", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setDomain("localhost");
         cookie.setMaxAge(86400); // 24 hours
         response.addCookie(cookie);
 

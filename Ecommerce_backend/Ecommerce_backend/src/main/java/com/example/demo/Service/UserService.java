@@ -71,7 +71,6 @@ public class UserService {
 		Cookie cookie = new Cookie("jwt",token);
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");
-		cookie.setDomain("localhost");
 		cookie.setMaxAge(3600);
 		response.addCookie(cookie);
 		
@@ -89,7 +88,6 @@ public class UserService {
 		Cookie cookie = new Cookie("jwt","");
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");
-		cookie.setDomain("localhost");
 		cookie.setMaxAge(0);
 		response.addCookie(cookie);
 		
