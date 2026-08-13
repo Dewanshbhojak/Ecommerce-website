@@ -1,0 +1,19 @@
+# Render Environment Variables Example Template (Placeholders Only)
+# Copy these key-value pairs into Render Environment Variables dashboard
+
+CORS_ALLOWED_ORIGINS=http://localhost:5173,https://YOUR-VERCEL-FRONTEND-URL.vercel.app
+
+# Note: Use Railway's PUBLIC TCP Proxy hostname and port, NOT mysql.railway.internal!
+SPRING_DATASOURCE_URL=jdbc:mysql://altaria.proxy.rlwy.net:34142/railway
+SPRING_DATASOURCE_USERNAME=root
+SPRING_DATASOURCE_PASSWORD=rERCPBRDHgMPEkRxigzFNyGOUOquFnWS
+
+SPRING_MAIL_HOST=smtp.gmail.com
+SPRING_MAIL_PORT=587
+SPRING_MAIL_USERNAME=YOUR_GMAIL_ADDRESS@gmail.com
+SPRING_MAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
+
+RAZORPAY_KEY_ID=YOUR_RAZORPAY_KEY_ID
+RAZORPAY_KEY_SECRET=YOUR_RAZORPAY_KEY_SECRET
+
+JWT_SECRET=YOUR_SECURE_JWT_SECRET_KEY_AT_LEAST_32_BYTES_LONG

@@ -1,0 +1,47 @@
+spring.application.name=Ecommerce_Backend
+
+# ===============================
+# CORS
+# ===============================
+cors.allowed-origins=http://localhost:5173
+
+# ===============================
+# Railway MySQL
+# ===============================
+spring.datasource.url=jdbc:mysql://maglev.proxy.rlwy.net:35399/railway?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=SfTYAJXOLTFjozcziuPKbRcoGyzoylEj
+
+# ===============================
+# JPA / Hibernate
+# ===============================
+spring.jpa.hibernate.ddl-auto=update
+
+# Let Hibernate detect the MySQL dialect automatically
+# spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# ===============================
+# Spring Security
+# ===============================
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+# ===============================
+# Razorpay
+# ===============================
+razorpay.key_id=rzp_test_T6aWVQ3c0fO67L
+razorpay.key_secret=93C1yDpJSyizvtXJYdd2POWx
+
+# ===============================
+# Gmail
+# ===============================
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=stitchwave.noreply@gmail.com
+spring.mail.password=ikae wxjw jwup getp
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+# ===============================
+# JWT
+# ===============================
+jwt.secret=test-jwt-secret-for-ecommerce-2026-very-long-random-key
