@@ -11,9 +11,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import com.example.demo.DTO.LoginRequestTDTO;
 import com.example.demo.DTO.UserProfileDTO;
@@ -37,19 +36,24 @@ public class UserService {
 	private JwtService jwtservice;
 	private OrderitemsRepository orderItemsRepository;
 	private OrdersRepository ordersRepository;
-	private JavaMailSender javaMailSender;
+	private final RestClient restClient = RestClient.create("https://api.brevo.com");
 	private ChangePasswordRepository changePasswordRepository;
+	@org.springframework.beans.factory.annotation.Value("${brevo.api-key:}")
+	private String brevoApiKey;
+	@org.springframework.beans.factory.annotation.Value("${brevo.sender-email:}")
+	private String brevoSenderEmail;
+	@org.springframework.beans.factory.annotation.Value("${brevo.sender-name:Vibe Luxe Concierge Team}")
+	private String brevoSenderName;
 	@org.springframework.beans.factory.annotation.Value("${app.cookie.secure:false}")
 	private boolean cookieSecure;
 	public UserService(UserRepository userRepository, JwtRepositary jwtRepository, JwtService jwtservice,
-			OrderitemsRepository orderItemsRepository,JavaMailSender javaMailSender, OrdersRepository ordersRepository ,ChangePasswordRepository changePasswordRepository) {
+			OrderitemsRepository orderItemsRepository, OrdersRepository ordersRepository ,ChangePasswordRepository changePasswordRepository) {
 		super();
 		this.userRepository = userRepository;
 		this.jwtRepository = jwtRepository;
 		this.jwtservice = jwtservice;
 		this.orderItemsRepository = orderItemsRepository;
 		this.ordersRepository = ordersRepository;
-		 this.javaMailSender =javaMailSender;
 		this.changePasswordRepository= changePasswordRepository;
 	}
 	public User registerUser(User user) {
@@ -147,12 +151,20 @@ public class UserService {
 				Support Team
 				""";
 		
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(email);
-		
-		message.setSubject("Verify Your Email Address");
-		message.setText(body);
-		javaMailSender.send(message);
+		if (brevoApiKey.isBlank() || brevoSenderEmail.isBlank()) {
+			throw new RuntimeException("Email service is not configured");
+		}
+		restClient.post()
+				.uri("/v3/smtp/email")
+				.header("api-key", brevoApiKey)
+				.body(Map.of(
+						"sender", Map.of("email", brevoSenderEmail, "name", brevoSenderName),
+						"to", List.of(Map.of("email", email)),
+						"subject", "Verify Your Email Address",
+						"textContent", body
+				))
+				.retrieve()
+				.toBodilessEntity();
 		
 		
 		

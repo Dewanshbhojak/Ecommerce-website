@@ -9,14 +9,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseCookie;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.security.SecureRandom;
 
 @Service
@@ -25,18 +24,27 @@ public class OtpAuthService {
     private final OtpTokenRepository otpTokenRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final JavaMailSender javaMailSender;
+    private final RestClient restClient;
+
+    @Value("${brevo.api-key:}")
+    private String brevoApiKey;
+
+    @Value("${brevo.sender-email:}")
+    private String brevoSenderEmail;
+
+    @Value("${brevo.sender-name:Vibe Luxe Concierge Team}")
+    private String brevoSenderName;
 
     @org.springframework.beans.factory.annotation.Value("${app.cookie.secure:false}")
     private boolean cookieSecure;
 
     @Autowired
     public OtpAuthService(OtpTokenRepository otpTokenRepository, UserRepository userRepository,
-                          JwtService jwtService, @Autowired(required = false) JavaMailSender javaMailSender) {
+                          JwtService jwtService) {
         this.otpTokenRepository = otpTokenRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
-        this.javaMailSender = javaMailSender;
+        this.restClient = RestClient.create("https://api.brevo.com");
     }
 
     public ResponseEntity<?> sendOtp(String email) {
@@ -59,24 +67,28 @@ public class OtpAuthService {
         int code = 100000 + random.nextInt(900000);
         String otpCode = String.valueOf(code);
 
-        if (javaMailSender == null) {
+        if (brevoApiKey.isBlank() || brevoSenderEmail.isBlank()) {
             return ResponseEntity.status(503).body(Map.of("message", "Email service is not configured"));
         }
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(cleanEmail);
-            message.setSubject("Vibe Luxe - Your Security Verification Passcode");
-            message.setText("Hello,\n\nYour One-Time Passcode (OTP) for Vibe Luxe login is: " + otpCode + "\n\nThis code expires in 5 minutes.\n\nThank you,\nVibe Luxe Concierge Team");
-            javaMailSender.send(message);
-       } catch (Exception e) {
-    e.printStackTrace();
-    return ResponseEntity.status(502).body(
-        Map.of(
-            "message", "Unable to send OTP email",
-            "error", e.getMessage() != null ? e.getMessage() : "Unknown email error"
-        )
-    );
-}
+            restClient.post()
+                    .uri("/v3/smtp/email")
+                    .header("api-key", brevoApiKey)
+                    .body(Map.of(
+                            "sender", Map.of("email", brevoSenderEmail, "name", brevoSenderName),
+                            "to", java.util.List.of(Map.of("email", cleanEmail)),
+                            "subject", "Vibe Luxe - Your Security Verification Passcode",
+                            "textContent", "Hello,\n\nYour One-Time Passcode (OTP) for Vibe Luxe login is: " + otpCode
+                                    + "\n\nThis code expires in 5 minutes.\n\nThank you,\nVibe Luxe Concierge Team"
+                    ))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            return ResponseEntity.status(502).body(Map.of(
+                    "message", "Unable to send OTP email",
+                    "error", "Brevo API request failed"
+            ));
+        }
         otpTokenRepository.save(new OtpToken(cleanEmail, otpCode, LocalDateTime.now().plusMinutes(5)));
 
         return ResponseEntity.ok(Map.of(

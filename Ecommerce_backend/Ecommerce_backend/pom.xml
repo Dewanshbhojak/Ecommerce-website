@@ -31,12 +31,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- Email Service -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
-		
 		<!-- Razorpay Payments -->
 		<dependency>
 			<groupId>com.razorpay</groupId>
