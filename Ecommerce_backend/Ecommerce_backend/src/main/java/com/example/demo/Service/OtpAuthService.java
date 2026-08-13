@@ -68,9 +68,15 @@ public class OtpAuthService {
             message.setSubject("Vibe Luxe - Your Security Verification Passcode");
             message.setText("Hello,\n\nYour One-Time Passcode (OTP) for Vibe Luxe login is: " + otpCode + "\n\nThis code expires in 5 minutes.\n\nThank you,\nVibe Luxe Concierge Team");
             javaMailSender.send(message);
-        } catch (Exception e) {
-            return ResponseEntity.status(502).body(Map.of("message", "Unable to send OTP email"));
-        }
+       } catch (Exception e) {
+    e.printStackTrace();
+    return ResponseEntity.status(502).body(
+        Map.of(
+            "message", "Unable to send OTP email",
+            "error", e.getMessage() != null ? e.getMessage() : "Unknown email error"
+        )
+    );
+}
         otpTokenRepository.save(new OtpToken(cleanEmail, otpCode, LocalDateTime.now().plusMinutes(5)));
 
         return ResponseEntity.ok(Map.of(
