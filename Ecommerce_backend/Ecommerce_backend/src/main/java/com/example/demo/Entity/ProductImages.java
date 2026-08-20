@@ -55,8 +55,8 @@ public class ProductImages {
 	public void setImageurl(String imageurl) {
 		this.imageurl = imageurl;
 	}
-	@Column(name = "image_url")
-	private String imageurl;
+	@Column(name = "image_url", columnDefinition = "TEXT")
+private String imageUrl;
 	
 	
 	
