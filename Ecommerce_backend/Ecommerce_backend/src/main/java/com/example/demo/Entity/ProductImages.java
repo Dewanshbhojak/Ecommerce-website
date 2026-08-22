@@ -64,4 +64,13 @@ public class ProductImages {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    @JsonIgnore
+    public String getImageurl() {
+        return imageUrl;
+    }
+
+    public void setImageurl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
