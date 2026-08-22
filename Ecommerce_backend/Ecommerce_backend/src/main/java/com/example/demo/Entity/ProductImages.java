@@ -1,6 +1,5 @@
 package com.example.demo.Entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "productimages")
 public class ProductImages {
@@ -29,12 +29,11 @@ public class ProductImages {
     @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
-
-    public ProductImages(int imageid, Product product, String imageurl) {
+    public ProductImages(int imageid, Product product, String imageUrl) {
         super();
         this.imageid = imageid;
         this.product = product;
-        this.imageUrl = imageurl;
+        this.imageUrl = imageUrl;
     }
 
     public ProductImages() {
@@ -58,11 +57,11 @@ public class ProductImages {
         this.product = product;
     }
 
-    public String getImageurl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageurl(String imageurl) {
-        this.imageUrl = imageurl;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
