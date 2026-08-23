@@ -6,7 +6,7 @@ export default function ProductImage({ product }) {
 
   useEffect(() => {
     if (product?.length > 0) {
-      setSelectedImage(product[0].imageurl);
+      setSelectedImage(product[0].imageUrl);
     }
   }, [product]);
 
@@ -27,10 +27,10 @@ export default function ProductImage({ product }) {
         {product.map((img) => (
           <img
             key={img.imageid}
-            src={img.imageurl}
+            src={img.imageUrl}
             alt=""
             onClick={() =>
-              setSelectedImage(img.imageurl)
+              setSelectedImage(img.imageUrl)
             }
             className="w-24 h-24 object-cover rounded-lg border cursor-pointer"
           />
