@@ -26,7 +26,7 @@ export default function ProductImage({ product }) {
       <div className="flex gap-4 mt-4">
         {product.map((img) => (
           <img
-            key={img.imageId}
+            key={img.imageid}
             src={img.imageUrl}
             alt=""
             onClick={() =>
