@@ -26,11 +26,11 @@ export default function ProductImage({ product }) {
       <div className="flex gap-4 mt-4">
         {product.map((img) => (
           <img
-            key={img.imageid}
-            src={img.imageurl}
+            key={img.imageId}
+            src={img.imageUrl}
             alt=""
             onClick={() =>
-              setSelectedImage(img.imageurl)
+              setSelectedImage(img.imageUrl)
             }
             className="w-24 h-24 object-cover rounded-lg border cursor-pointer"
           />
