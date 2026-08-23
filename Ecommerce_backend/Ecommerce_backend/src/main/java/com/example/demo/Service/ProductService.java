@@ -13,8 +13,14 @@ import com.example.demo.Repository.CategoryRepository;
 import com.example.demo.Repository.ProductImageRepository;
 import com.example.demo.Repository.ProductRepository;
 
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class ProductService {
+
+	private static final Logger log = LoggerFactory.getLogger(ProductService.class);
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
@@ -77,11 +83,32 @@ public class ProductService {
 	}
 
 	private List<ProductDTO> convertToDtoList(List<Product> products) {
-		List<ProductDTO> response = new ArrayList<>();
+		if (products == null || products.isEmpty()) {
+			return Collections.emptyList();
+		}
+		long startTime = System.currentTimeMillis();
+
+		List<Integer> productIds = products.stream()
+				.map(Product::getProductId)
+				.filter(Objects::nonNull)
+				.distinct()
+				.toList();
+
+		List<ProductImages> allImages = productImageRepository.findByProductProductIdIn(productIds);
+
+		Map<Integer, List<ProductImages>> imagesByProductId = allImages.stream()
+				.filter(img -> img.getProduct() != null && img.getProduct().getProductId() != null)
+				.collect(Collectors.groupingBy(img -> img.getProduct().getProductId()));
+
+		List<ProductDTO> response = new ArrayList<>(products.size());
 		for (Product p : products) {
-			List<ProductImages> images = productImageRepository.findByProductProductId(p.getProductId());
+			List<ProductImages> images = imagesByProductId.getOrDefault(p.getProductId(), Collections.emptyList());
 			response.add(new ProductDTO(p, images));
 		}
+
+		long duration = System.currentTimeMillis() - startTime;
+		log.info("Converted {} products to DTOs using 1 batch image query in {}ms", products.size(), duration);
+
 		return response;
 	}
 }

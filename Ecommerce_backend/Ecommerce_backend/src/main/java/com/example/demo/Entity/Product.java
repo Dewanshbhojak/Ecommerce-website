@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "products")
+@Table(name = "products", indexes = {
+    @Index(name = "idx_products_category_id", columnList = "category_id"),
+    @Index(name = "idx_products_created_at", columnList = "createdAt")
+})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
