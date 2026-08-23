@@ -6,7 +6,7 @@ export default function ProductImage({ product }) {
 
   useEffect(() => {
     if (product?.length > 0) {
-      setSelectedImage(product[0].imageurl);
+      setSelectedImage(product[0].imageUrl);
     }
   }, [product]);
 
