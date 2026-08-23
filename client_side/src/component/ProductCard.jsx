@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
   // Extract primary image URL safely
   let imageUrl = null;
   if (product.list && product.list.length > 0 && product.list[0].imageUrl) {
-    imageUrl = product.list[0].imageurl;
+    imageUrl = product.list[0].imageUrl;
   } else if (prod.imageUrl) {
     imageUrl = prod.imageUrl;
   } else if (prod.imageUrl) {
